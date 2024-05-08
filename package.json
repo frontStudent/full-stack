@@ -7,7 +7,8 @@
     "dev:front": "pnpm --filter frontend dev",
     "dev:back": "pnpm --filter backend start:dev",
     "build:front": "pnpm --filter frontend build",
-    "build:back": "pnpm --filter backend build"
+    "build:back": "pnpm --filter backend build",
+    "gen:back": "pnpm --filter backend gen"
   },
   "keywords": [],
   "author": "",
