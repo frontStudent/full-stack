@@ -27,14 +27,14 @@ export class Section {
   @Column({ default: '默认模块' })
   name: string;
 
-  @Column({ default: 'primary' })
-  titleStyle: string; // 标题样式
+  @Column({ default: 'primary', comment: '模块样式' })
+  titleStyle: string;
 
   @Column({ default: 550 })
-  width: number; // 宽度
+  width: number; 
 
   @Column({ default: 100 })
-  height: number; // 高度
+  height: number; 
 
   @CreateDateColumn()
   createTime: Date;

@@ -15,7 +15,7 @@ export class UserService {
   }
 
   async findAll() {
-    return await this.userRepository.find();
+    return await this.userRepository.find({relations: ['drafts']});
   }
 
   async findOne(id: string) {

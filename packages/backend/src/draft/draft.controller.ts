@@ -1,4 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query
+} from '@nestjs/common';
 import { DraftService } from './draft.service';
 import { CreateDraftDto } from './dto/create-draft.dto';
 import { UpdateDraftDto } from './dto/update-draft.dto';
@@ -7,28 +13,28 @@ import { UpdateDraftDto } from './dto/update-draft.dto';
 export class DraftController {
   constructor(private readonly draftService: DraftService) {}
 
-  @Post()
+  @Post('add')
   create(@Body() createDraftDto: CreateDraftDto) {
     return this.draftService.create(createDraftDto);
   }
 
-  @Get()
+  @Get('queryAll')
   findAll() {
     return this.draftService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.draftService.findOne(+id);
+  @Get('query')
+  findOne(@Query('id') id: string) {
+    return this.draftService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDraftDto: UpdateDraftDto) {
-    return this.draftService.update(+id, updateDraftDto);
+  @Post('update')
+  update(@Body('id') id: string, @Body() updateDraftDto: UpdateDraftDto) {
+    return this.draftService.update(id, updateDraftDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.draftService.remove(+id);
+  @Get('delete')
+  remove(@Query('id') id: string) {
+    return this.draftService.remove(id);
   }
 }

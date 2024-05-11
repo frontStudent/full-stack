@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { BoxService } from './box.service';
 import { CreateBoxDto } from './dto/create-box.dto';
 import { UpdateBoxDto } from './dto/update-box.dto';
@@ -7,28 +7,28 @@ import { UpdateBoxDto } from './dto/update-box.dto';
 export class BoxController {
   constructor(private readonly boxService: BoxService) {}
 
-  @Post()
+  @Post('add')
   create(@Body() createBoxDto: CreateBoxDto) {
     return this.boxService.create(createBoxDto);
   }
 
-  @Get()
+  @Get('queryAll')
   findAll() {
     return this.boxService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.boxService.findOne(+id);
+  @Get('query')
+  findOne(@Query('id') id: string) {
+    return this.boxService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBoxDto: UpdateBoxDto) {
-    return this.boxService.update(+id, updateBoxDto);
+  @Post('update')
+  update(@Body('id') id: string, @Body() updateBoxDto: UpdateBoxDto) {
+    return this.boxService.update(id, updateBoxDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.boxService.remove(+id);
+  @Get('delete')
+  remove(@Query('id') id: string) {
+    return this.boxService.remove(id);
   }
 }

@@ -1,26 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
-
+import { Draft } from 'src/draft/entities/draft.entity';
+import { Section } from './entities/section.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 @Injectable()
 export class SectionService {
-  create(createSectionDto: CreateSectionDto) {
-    return 'This action adds a new section';
+  @InjectRepository(Draft)
+  private draftRepository: Repository<Draft>;
+
+  @InjectRepository(Section)
+  private sectionRepository: Repository<Section>;
+
+  async create(createSectionDto: CreateSectionDto) {
+    const { draftId } = createSectionDto;
+    let newSection = new Section();
+
+    const draft = await this.draftRepository.findOne({
+      where: { id: draftId },
+      relations: ['sections', 'user'],
+    });
+
+    if (!draft) {
+      throw new InternalServerErrorException({
+        message: '该草稿不存在',
+      });
+    }
+    newSection.draft = draft;
+    newSection.boxes = [];
+    return await this.sectionRepository.save(newSection);
   }
 
-  findAll() {
-    return `This action returns all section`;
+  async findAll() {
+    return await this.sectionRepository.find({
+      relations: ['draft', 'boxes'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} section`;
+  async findOne(id: string) {
+    return await this.sectionRepository.findOne({
+      where: { id },
+      relations: ['section'],
+    });
   }
 
-  update(id: number, updateSectionDto: UpdateSectionDto) {
-    return `This action updates a #${id} section`;
+  async update(id: string, updateSectionDto: UpdateSectionDto) {
+    return await this.sectionRepository.update(id, updateSectionDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} section`;
+  async remove(id: string) {
+    return await this.sectionRepository.delete(id);
   }
 }
