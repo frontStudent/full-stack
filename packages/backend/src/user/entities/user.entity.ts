@@ -1,5 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { Draft } from 'src/draft/entities/draft.entity';
+import { Template } from 'src/template/entities/template.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -13,4 +21,8 @@ export class User {
 
   @OneToMany(() => Draft, (draft) => draft.user)
   drafts: Draft[];
+
+  @ManyToMany(() => Template, (template) => template.users)
+  @JoinTable()
+  templates: Template[]; 
 }

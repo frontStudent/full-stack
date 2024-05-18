@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DraftModule } from './draft/draft.module';
 import { SectionModule } from './section/section.module';
 import { BoxModule } from './box/box.module';
+import { TemplateModule } from './template/template.module';
 @Module({
   imports: [
     UserModule,
@@ -22,6 +23,7 @@ import { BoxModule } from './box/box.module';
     DraftModule,
     SectionModule,
     BoxModule,
+    TemplateModule,
   ],
   controllers: [AppController],
   providers: [AppService],

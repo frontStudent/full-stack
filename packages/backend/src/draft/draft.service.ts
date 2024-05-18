@@ -34,15 +34,18 @@ export class DraftService {
   }
 
   async findAll() {
-    return await this.draftRepository.find({ relations: ['sections', 'user', 'sections.boxes'] });
+    return await this.draftRepository.find({
+      relations: ['sections', 'user', 'sections.boxes'],
+    });
   }
 
   async findOne(id: string) {
     return await this.draftRepository.findOne({
       where: { id },
-      relations: ['sections', 'user'],
+      relations: ['sections', 'sections.boxes', 'user'],
     });
   }
+
 
   async update(id: string, updateDraftDto: UpdateDraftDto) {
     return await this.draftRepository.update(id, updateDraftDto);

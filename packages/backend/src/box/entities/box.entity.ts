@@ -22,7 +22,12 @@ export class Box {
   section: Section;
 
   @Column({
-    default: '默认内容1',
+    default: 'editor',
+  })
+  type: string;
+
+  @Column({
+    default: '<div>默认内容1</div>',
     nullable: true,
     comment: '盒子富文本内容，当为图片时此字段为空',
   })

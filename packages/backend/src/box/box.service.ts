@@ -16,7 +16,7 @@ export class BoxService {
 
   async create(createBoxDto: CreateBoxDto) {
     let newBox = new Box();
-    const { sectionId, content, initInfo } = createBoxDto;
+    const { id, sectionId, content, initInfo } = createBoxDto;
     const section = await this.sectionRepository.findOne({
       where: { id: sectionId },
       relations: ['boxes'],
@@ -27,6 +27,7 @@ export class BoxService {
         message: '该模块不存在',
       });
     }
+    if(id) newBox.id = id;
     newBox.section = section;
     newBox.content = content;
     newBox.initInfo = initInfo;
@@ -47,6 +48,7 @@ export class BoxService {
   }
 
   async update(id: string, updateBoxDto: UpdateBoxDto) {
+    console.log(updateBoxDto, 'updateBoxDto');
     return await this.boxRepository.update(id, updateBoxDto);
   }
 

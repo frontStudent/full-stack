@@ -37,4 +37,9 @@ export class UserController {
   remove(@Query('id') id: string) {
     return this.userService.remove(+id);
   }
+
+  @Post('star')
+  star(@Body('id') id: string, @Body('templateId') templateId: string) {
+    return this.userService.star(id, templateId);
+  }
 }
