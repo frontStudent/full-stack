@@ -19,6 +19,7 @@ import { TemplateModule } from './template/template.module';
       database: 'resume',
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
+      logging: true,
     }),
     DraftModule,
     SectionModule,

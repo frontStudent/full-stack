@@ -16,7 +16,7 @@ export class BoxService {
 
   async create(createBoxDto: CreateBoxDto) {
     let newBox = new Box();
-    const { id, sectionId, content, initInfo } = createBoxDto;
+    const { id, sectionId, content,src, initInfo, type } = createBoxDto;
     const section = await this.sectionRepository.findOne({
       where: { id: sectionId },
       relations: ['boxes'],
@@ -30,6 +30,8 @@ export class BoxService {
     if(id) newBox.id = id;
     newBox.section = section;
     newBox.content = content;
+    newBox.type = type;
+    newBox.src = src;
     newBox.initInfo = initInfo;
     return await this.boxRepository.save(newBox);
   }
@@ -48,7 +50,6 @@ export class BoxService {
   }
 
   async update(id: string, updateBoxDto: UpdateBoxDto) {
-    console.log(updateBoxDto, 'updateBoxDto');
     return await this.boxRepository.update(id, updateBoxDto);
   }
 

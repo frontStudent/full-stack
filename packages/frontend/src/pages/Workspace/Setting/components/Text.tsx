@@ -1,12 +1,14 @@
 import {  useContext } from "react";
 import { StoreCtx } from "../../context";
 import RichTextExample from "./RichEditor";
-
+import axios from "utils/Request";
+import { serialize } from "./RichEditor";
 const Text = () => {
   const { state, onChangeState } = useContext(StoreCtx);
   const initialValue = state.selectField.content;
-  console.log(initialValue, 'initialValue')
-  const handleUpdateBoxContent = (val: string) => {
+
+  const handleUpdateBoxContent = (val: any) => {
+    console.log(val,'val =================')
     const newSections = state.sections.map((sec) =>
       sec.boxes.find((box) => box.id === state.selectField.id)
         ? {
@@ -17,6 +19,10 @@ const Text = () => {
           }
         : sec
     );
+    axios.post("/box/update", {
+      id: state.selectField.id,
+      content: val.map((item) => serialize(item)).join(""),
+    });
     onChangeState({ sections: newSections });
   };
   return (

@@ -24,17 +24,23 @@ export class Section {
   @OneToMany(() => Box, (box) => box.section)
   boxes: Box[];
 
+  @Column({ default: 'section' })
+  type: string;
+
   @Column({ default: '默认模块' })
   name: string;
+
+  @Column({ default: '1' })
+  showTitle: '0' | '1';
 
   @Column({ default: 'primary', comment: '模块样式' })
   titleStyle: string;
 
   @Column({ default: 550 })
-  width: number; 
+  width: number;
 
   @Column({ default: 100 })
-  height: number; 
+  height: number;
 
   @CreateDateColumn()
   createTime: Date;

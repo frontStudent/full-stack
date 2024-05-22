@@ -1,14 +1,20 @@
-"use client";
-
-import React, { useContext } from "react";
+import React, { useContext, useRef, useEffect } from "react";
 import { ReactSortable } from "react-sortablejs";
 import { StoreCtx } from "../context";
 import Card from "./Card";
 import "./resize.css";
 import { BoxMutateHelper, SectionMutateHelper, ResizeHelper } from "../types";
 import axios from "utils/Request";
+import { serialize } from "../Setting/components/RichEditor";
+import { getUrlParameter } from "utils/Device";
+import { exportPDF } from "utils/Export";
+import { Button } from "antd";
+
 const BasicFunction = () => {
   const { state, onChangeState } = useContext(StoreCtx);
+
+  const pdfRef = useRef<HTMLDivElement>(null);
+
   // 增删改某个模块中的box信息，但并非增删改模块
   const handleMutateBoxInSection: BoxMutateHelper = (id, item, op) => {
     let newSections;
@@ -22,9 +28,17 @@ const BasicFunction = () => {
             }
           : sec;
       });
+      const params = item.src
+        ? { src: item.src, content: null }
+        : {
+            content: item.content.map((item) => serialize(item)).join(""),
+            src: null,
+          };
       axios.post("/box/add", {
-        id: boxId,
         ...item,
+        ...params,
+        id: boxId,
+        sectionId: id,
       });
       onChangeState({ sections: newSections });
       return;
@@ -38,9 +52,7 @@ const BasicFunction = () => {
             }
           : sec;
       });
-      axios.post("/box/delete", {
-        id: item.id,
-      });
+      axios.get(`/box/delete?id=${item.id}`);
       onChangeState({ sections: newSections });
       return;
     }
@@ -57,6 +69,7 @@ const BasicFunction = () => {
       });
       axios.post("/box/update", {
         id: item.id,
+        src: item.src ? item.src : null,
         initInfo: item.lastInfo,
         lastInfo: item.lastInfo,
       });
@@ -68,20 +81,26 @@ const BasicFunction = () => {
   // 增删改某个模块信息
   const handleMutateSection: SectionMutateHelper = (id, op) => {
     if (op === "add") {
+      const secId = new Date().getTime().toString();
+      const draftId = getUrlParameter("id");
+      const newSec = {
+        id: secId,
+        draftId,
+        type: "section",
+        title: "fiona",
+        titleStyle: "shrek",
+        height: 200,
+        width: 550,
+        boxes: [],
+      };
       const newSections = [...state.sections];
       newSections.splice(
         state.sections.findIndex((sec) => sec.id === id) + 1,
-        0,
-        {
-          id: new Date().getTime().toString(),
-          type: "section",
-          title: "fiona",
-          titleStyle: "shrek",
-          height: 100,
-          width: 550,
-          boxes: [],
-        }
+        0
       );
+      axios.post("/section/add", {
+        ...newSec,
+      });
       onChangeState({ sections: newSections });
       return;
     }
@@ -102,23 +121,36 @@ const BasicFunction = () => {
     onChangeState({ sections: newSections });
   };
   return (
-    <ReactSortable
-      list={state.sections}
-      setList={(newList) => onChangeState({ sections: newList })}
-      animation={150}
-      handle=".handle"
-      style={{ marginLeft: "30px" }}
-    >
-      {state.sections.map((item) => (
-        <Card
-          key={item.id}
-          item={item}
-          onMutateBox={handleMutateBoxInSection}
-          onMutateSection={handleMutateSection}
-          onResize={handleResize}
-        />
-      ))}
-    </ReactSortable>
+    <>
+      <Button
+        onClick={() => {
+          if (pdfRef.current) {
+            exportPDF("test", pdfRef.current);
+          }
+        }}
+      >
+        pdf
+      </Button>
+      <div ref={pdfRef}>
+        <ReactSortable
+          list={state.sections}
+          setList={(newList) => onChangeState({ sections: newList })}
+          animation={150}
+          handle=".handle"
+          style={{ margin: "0 auto" }}
+        >
+          {state.sections.map((item) => (
+            <Card
+              key={item.id}
+              item={item}
+              onMutateBox={handleMutateBoxInSection}
+              onMutateSection={handleMutateSection}
+              onResize={handleResize}
+            />
+          ))}
+        </ReactSortable>
+      </div>
+    </>
   );
 };
 

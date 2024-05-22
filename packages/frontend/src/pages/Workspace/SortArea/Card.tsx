@@ -1,5 +1,5 @@
 import { useRef, useMemo, useContext, SyntheticEvent } from "react";
-import { Space } from "antd";
+import { Space, Image } from "antd";
 import { useDrop, XYCoord } from "react-dnd";
 import parse from "html-react-parser";
 
@@ -15,6 +15,8 @@ import { DragItem, Box, SectionProps } from "../types";
 import { ItemTypes } from "../Source/ItemTypes";
 import RecTitle from "./RecTitle";
 import { serialize } from "../Setting/components/RichEditor";
+import axios from "utils/Request";
+import AvatarUploader from "../../../components/AvatarUploader";
 const Wrap = styled.div`
   position: relative;
   margin-bottom: 10px;
@@ -27,12 +29,14 @@ const IconWrap = styled(Space)`
   top: 5px;
   display: flex;
   font-size: 16px;
+  z-index: 20;
 `;
 
 const CloseIcon = styled(CloseOutlined)`
   position: absolute;
   top: 5px;
   right: 5px;
+  z-index: 20;
 `;
 const Card = ({
   item,
@@ -40,9 +44,7 @@ const Card = ({
   onMutateSection,
   onResize,
 }: SectionProps) => {
-  const { id, width, height, boxes } = item;
-
-  console.log(item, "item")
+  const { id, width, height, boxes, name, showTitle } = item;
   const { state, onChangeState } = useContext(StoreCtx);
   const minHeight = useMemo(() => {
     const list = boxes.map((child: Box) =>
@@ -61,9 +63,12 @@ const Card = ({
         const dropOffset = ref.current?.getBoundingClientRect() as DOMRect;
         const left = clientOffset.x - dropOffset.x;
         const top = clientOffset.y - dropOffset.y;
+
+        const width = item?.type === "img" ? 100 : 150;
+        const height = item?.type === "img" ? 150 : 30;
         const newItem = {
           ...item,
-          initInfo: { left, top, width: 150, height: 50 },
+          initInfo: { left, top, width, height },
         };
         onMutateBox(id, newItem, "add");
       },
@@ -76,6 +81,12 @@ const Card = ({
       width={width}
       height={height}
       onResize={(e, { size }) => onResize(id, size)}
+      onResizeStop={(e, { size }) => {
+        axios.post("/section/update", {
+          id,
+          height: size.height,
+        });
+      }}
       handle={<span className="react-resizable-handle" />}
       minConstraints={[100, minHeight]}
     >
@@ -91,15 +102,19 @@ const Card = ({
               : "1px solid transparent"
           }`,
           background: `${state.selectField?.id === id ? "#F2F8FE" : ""}`,
+          margin: "0 auto"
         }}
-        onClick={() => {
+        onClick={(e) => {
           console.log(item, "当前点击");
-          onChangeState({ selectField: item });
+          e.stopPropagation();
+          onChangeState({ selectField: item, selectType: "box" });
         }}
       >
-        <RecTitle modTitleSize="16px" colorList={["#f4f7f6", "#4a8bd6"]}>
-          模块名称
-        </RecTitle>
+        {showTitle === "1" && (
+          <RecTitle modTitleSize="16px" colorList={["#f4f7f6", "#4a8bd6"]}>
+            {name || "模块名称"}
+          </RecTitle>
+        )}
         {state.selectField?.id === id && (
           <IconWrap>
             <PlusOutlined
@@ -121,14 +136,19 @@ const Card = ({
               width: child?.initInfo?.width,
               height: child?.initInfo?.height,
             }}
+            {...(child.type === "img"
+              ? {
+                  lockAspectRatio: 2 / 3,
+                }
+              : {})}
             key={child?.id}
             onDragStop={(e, d) => {
               const rectInfo = (
                 e.target as HTMLElement
               ).getBoundingClientRect();
 
-              console.log(rectInfo, "rectInfo")
-              console.log(d, "d")
+              console.log(rectInfo, "rectInfo");
+              console.log(d, "d");
               const lastInfo = {
                 height: rectInfo.height - 1,
                 width: rectInfo.width,
@@ -164,12 +184,39 @@ const Card = ({
               onChangeState({ selectField: child, selectType: "box" });
             }}
           >
-            {state.selectField?.id === child.id && (
-              <CloseIcon
-                onClick={() => onMutateBox(id, child, "delete")}
-              />
-            )}
-            {parse(child.content.map((item) => serialize(item)).join(""))}
+            <div>
+              {state.selectField?.id === child.id && (
+                <CloseIcon onClick={() => onMutateBox(id, child, "delete")} />
+              )}
+              {child.type === "img" ? (
+                // <AvatarUploader
+                //   onMutateBox={onMutateBox}
+                //   id={id}
+                //   child={child}
+                // />
+                <img
+                  src={"https://picsum.photos/200/300"}
+                  alt="avatar"
+                  style={{
+                    width: "100%",
+                  }}
+                  // preview={false}
+                />
+              ) : (
+                // <Image
+                //   src={child.src}
+                //   style={{ width: "100%" }}
+                //   preview={false}
+                //   placeholder={true}
+                //   onClick={(e: SyntheticEvent) => {
+                //     e.preventDefault();
+                //   }}
+                // ></Image>
+                <div>
+                  {parse(child.content.map((item) => serialize(item)).join(""))}
+                </div>
+              )}
+            </div>
             {/* <div
               dangerouslySetInnerHTML={{
                 __html: child.content.map((item) => serialize(item)).join(""),

@@ -4,7 +4,7 @@ import { DragItem } from "../types";
 const boxes = [
   {
     id: "1",
-    title: "Rich Text",
+    title: "文本编辑组件",
     content: [
       {
         type: "paragraph",
@@ -12,30 +12,27 @@ const boxes = [
         children: [{ text: "Hello11" }],
       },
     ],
+    src: "",
     type: "editor",
   },
   {
-    id: "2",
-    title: "Not determined yet",
-    content: [
-      {
-        type: "paragraph",
-        align: "left",
-        children: [{ text: "Hello22" }],
-      },
-    ],
-    type: "unknown",
-  },
+    id: "1",
+    title: "照片上传组件",
+    content: [],
+    src: "",
+    type: "img",
+  }
 ];
 
 const DragArea = () => {
   return (
     <div className="flex flex-col gap-4 p-4">
-      {boxes.map(({ id, content, title, type }: DragItem) => {
+      {boxes.map(({ id, content, src, title, type }: DragItem) => {
         return (
           <DragBox
             key={id}
             id={id}
+            src={src}
             content={content}
             title={title}
             type={type}

@@ -31,11 +31,10 @@ const CenterArea = styled.div`
 `;
 
 const ResumeArea = styled.div`
-  min-width: 600px;
-  max-width: 600px;
+  min-width: 590px;
+  max-width: 590px;
   margin: 0 auto;
-  padding: 10px;
-  height: 100%;
+  height: 590 * 1.414px;
   background-color: #fff;
 `;
 const RightArea = styled.div`
@@ -43,7 +42,7 @@ const RightArea = styled.div`
   height: 100%;
 `;
 
-const deserialize = (el, markAttributes = {}) => {
+const deserialize: any = (el: any, markAttributes = {}) => {
   if (el.nodeType === Node.TEXT_NODE) {
     return jsx("text", markAttributes, el.textContent);
   } else if (el.nodeType !== Node.ELEMENT_NODE) {
@@ -105,8 +104,7 @@ const deserialize = (el, markAttributes = {}) => {
 const transformHtml = (html: string) => {
   const document = new DOMParser().parseFromString(html, "text/html");
   return deserialize(document.body);
-}
-
+};
 
 const Workspace = () => {
   const [state, setState] = useState({
@@ -145,7 +143,7 @@ const Workspace = () => {
 
   useEffect(() => {
     const draftId = getUrlParameter("id");
-    axios.get(`/draft/query?id=${draftId}`).then((data) => {
+    axios.get(`/draft/query?id=${draftId}`).then((data: any) => {
       const sections = data.sections.map((item: any) => {
         return {
           ...item,
@@ -154,27 +152,28 @@ const Workspace = () => {
               ...child,
               content: transformHtml(child.content),
             };
-          })
+          }),
         };
       });
-      console.log(sections, "sections")
+      console.log(sections, "sections");
       setState((prev) => {
         return {
           ...prev,
-          sections
+          sections,
         };
       });
     });
   }, []);
 
+  const handleChangeState = (obj: SelectedField) => {
+    setState((preState) => ({
+      ...preState,
+      ...obj,
+    }));
+  };
   const store = {
     state,
-    onChangeState: (obj: SelectedField) => {
-      setState((preState) => ({
-        ...preState,
-        ...obj,
-      }));
-    },
+    onChangeState: handleChangeState,
   };
 
   return (
@@ -184,7 +183,11 @@ const Workspace = () => {
           <LeftArea>
             <DragArea />
           </LeftArea>
-          <CenterArea>
+          <CenterArea
+            onClick={(e) => {
+              handleChangeState({ selectField: {} });
+            }}
+          >
             <ResumeArea>
               <SortArea />
             </ResumeArea>

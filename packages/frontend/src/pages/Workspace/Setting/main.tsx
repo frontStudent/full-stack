@@ -1,36 +1,33 @@
 import React, { useContext } from "react";
 import { StoreCtx } from "../context";
-
+import { Tabs } from "antd";
 import Single from "./Single";
 import Whole from "./Whole";
+const items = [
+  {
+    key: "resume",
+    label: "整体配置",
+    children: <Whole />,
+  },
+  {
+    key: "box",
+    label: "单体配置",
+    children: <Single />,
+  },
+];
 const SettingContainer = () => {
-  // const { state, onChangeState } = useContext(StoreCtx);
+  const { state, onChangeState } = useContext(StoreCtx);
+  const onChange = (key: string) => {
+    onChangeState({ selectType: key });
+  };
   return (
     <div className="p-1">
-      {/* <Tabs value={`${state.selectType}`}> */}
-        {/* <TabsList className="w-full">
-          <TabsTrigger
-            value="resume"
-            className="w-[45%]"
-            onClick={() => onChangeState({ selectType: "resume" })}
-          >
-            resume
-          </TabsTrigger>
-          <TabsTrigger
-            value="box"
-            className="w-[45%]"
-            onClick={() => onChangeState({ selectType: "box" })}
-          >
-            box
-          </TabsTrigger>
-        </TabsList> */}
-        {/* <TabsContent value="resume"> */}
-          <Whole />
-        {/* </TabsContent>
-        <TabsContent value="box"> */}
-          <Single />
-        {/* </TabsContent> */}
-      {/* </Tabs> */}
+      <Tabs
+        activeKey={state.selectType}
+        items={items}
+        onChange={onChange}
+        centered
+      />
     </div>
   );
 };

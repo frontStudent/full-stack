@@ -5,6 +5,7 @@ export type DragItem = {
   title: string;
   type: string;
   content: Descendant[];
+  src: string;
   width?: number;
   height?: number;
 };
@@ -29,8 +30,9 @@ export type Box = {
 export type Section = {
   id: string;
   type: string;
-  title: string;
+  name: string;
   titleStyle: string;
+  showTitle: '0' | '1';
   boxes: Box[];
   width: number;
   height: number;

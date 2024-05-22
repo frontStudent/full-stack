@@ -4,19 +4,19 @@ import COS from "cos-js-sdk-v5";
 import ImgCrop from "antd-img-crop";
 import styled from "styled-components";
 const UploadArea = styled.div`
-  width: 200px;
-  height: 300px;
-  border-radius: 2px;
+  width: 100px;
+  height: 150px;
   background-color: #f5f5f5;
 `;
-const AvatarUploader: React.FC = () => {
-  const [lastImageUrl, setLastImageUrl] = useState<string>("");
+const AvatarUploader: React.FC = ({ onMutateBox, id, child }) => {
+  const [lastImageUrl, setLastImageUrl] = useState<string>(child.src || "");
 
   const cos = new COS({});
 
   return (
     <ImgCrop rotationSlider aspect={2 / 3}>
       <Upload
+        disabled={!!lastImageUrl}
         customRequest={({ file, onSuccess }) => {
           cos.putObject(
             {
@@ -36,7 +36,9 @@ const AvatarUploader: React.FC = () => {
                 console.log(err);
                 return;
               }
-              setLastImageUrl("https://" + data.Location);
+              let url = "https://" + data.Location;
+              setLastImageUrl(url);
+              onMutateBox?.(id, { ...child, src: url }, "update");
               onSuccess?.(data);
             }
           );
@@ -48,8 +50,9 @@ const AvatarUploader: React.FC = () => {
             src={lastImageUrl}
             alt="avatar"
             style={{
-              width: "200px",
+              width: "100%",
             }}
+            preview={false}
           />
         ) : (
           <UploadArea>upload</UploadArea>

@@ -14,7 +14,7 @@ export class SectionService {
   private sectionRepository: Repository<Section>;
 
   async create(createSectionDto: CreateSectionDto) {
-    const { draftId } = createSectionDto;
+    const { id, draftId } = createSectionDto;
     let newSection = new Section();
 
     const draft = await this.draftRepository.findOne({
@@ -27,6 +27,7 @@ export class SectionService {
         message: '该草稿不存在',
       });
     }
+    if(id) newSection.id = id;
     newSection.draft = draft;
     newSection.boxes = [];
     return await this.sectionRepository.save(newSection);
