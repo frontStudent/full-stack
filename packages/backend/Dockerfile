@@ -1,5 +1,5 @@
 # 设置基础镜像
-FROM node:18-alpine
+FROM node:latest
 
 # 设置工作目录
 WORKDIR /app
